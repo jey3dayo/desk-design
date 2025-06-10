@@ -68,9 +68,9 @@ export default function DeskViewer3D() {
   const [layout, setLayout] = useState<DeskLayout | null>(null)
   const [selectedElement, setSelectedElement] = useState<Element3D | null>(null)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
-  
+
   useEffect(() => {
-    fetch('/desk-layout-3d.yaml')
+    fetch('/layout.yaml')
       .then(response => response.text())
       .then(yamlText => {
         const data = yaml.load(yamlText) as DeskLayout

@@ -9,8 +9,8 @@ export async function saveYamlFile(content: string) {
       throw new Error('Content is required')
     }
 
-    // publicディレクトリのdesk-layout-3d.yamlに保存
-    const filePath = join(process.cwd(), 'public', 'desk-layout-3d.yaml')
+    // publicディレクトリのlayout.yamlに保存
+    const filePath = join(process.cwd(), 'public', 'layout.yaml')
     writeFileSync(filePath, content, 'utf8')
 
     return { success: true, message: 'YAML file saved successfully' }
