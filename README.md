@@ -1,6 +1,6 @@
 # Desk Design
 
-Next.js と React Three Fiber で構築された 3D 机レイアウトビューアー。インタラクティブな 3D 環境で机のセットアップを可視化・編集できます。
+Next.js と React Three Fiber で構築されたインタラクティブな机デザインツール。3D 環境で机のレイアウトを可視化・編集できます。
 
 ## ✨ 機能
 
