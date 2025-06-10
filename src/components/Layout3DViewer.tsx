@@ -75,35 +75,35 @@ function CustomGrid({ size = 20, divisions = 40, majorEvery = 10 }: {
 }) {
   const minorGridRef = useRef<THREE.LineSegments>(null!)
   const majorGridRef = useRef<THREE.LineSegments>(null!)
-  
+
   useLayoutEffect(() => {
     const minorPositions: number[] = []
     const majorPositions: number[] = []
-    
+
     for (let i = 0; i <= divisions; i++) {
       const pos = (i / divisions - 0.5) * size
-      
+
       if (i % majorEvery === 0) {
         // Major lines (every 10th line)
-        majorPositions.push(-size/2, 0, pos, size/2, 0, pos) // horizontal
-        majorPositions.push(pos, 0, -size/2, pos, 0, size/2) // vertical
+        majorPositions.push(-size / 2, 0, pos, size / 2, 0, pos) // horizontal
+        majorPositions.push(pos, 0, -size / 2, pos, 0, size / 2) // vertical
       } else {
         // Minor lines
-        minorPositions.push(-size/2, 0, pos, size/2, 0, pos) // horizontal
-        minorPositions.push(pos, 0, -size/2, pos, 0, size/2) // vertical
+        minorPositions.push(-size / 2, 0, pos, size / 2, 0, pos) // horizontal
+        minorPositions.push(pos, 0, -size / 2, pos, 0, size / 2) // vertical
       }
     }
-    
+
     if (minorGridRef.current) {
-      minorGridRef.current.geometry.setAttribute('position', 
+      minorGridRef.current.geometry.setAttribute('position',
         new THREE.BufferAttribute(new Float32Array(minorPositions), 3))
     }
     if (majorGridRef.current) {
-      majorGridRef.current.geometry.setAttribute('position', 
+      majorGridRef.current.geometry.setAttribute('position',
         new THREE.BufferAttribute(new Float32Array(majorPositions), 3))
     }
   }, [size, divisions, majorEvery])
-  
+
   return (
     <>
       <lineSegments ref={minorGridRef}>
@@ -118,7 +118,7 @@ function CustomGrid({ size = 20, divisions = 40, majorEvery = 10 }: {
   )
 }
 
-export default function DeskViewer3D() {
+export default function Layout3DViewer() {
   const [layout, setLayout] = useState<DeskLayout | null>(null)
   const [selectedElement, setSelectedElement] = useState<Element3D | null>(null)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
@@ -291,11 +291,10 @@ export default function DeskViewer3D() {
           {layout.elements.map((element, index) => (
             <div
               key={`${element.name}-${index}`}
-              className={`p-2 rounded cursor-pointer text-sm transition-colors ${
-                selectedIndex === index
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-700 hover:bg-gray-600 text-gray-200'
-              }`}
+              className={`p-2 rounded cursor-pointer text-sm transition-colors ${selectedIndex === index
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-700 hover:bg-gray-600 text-gray-200'
+                }`}
               onClick={() => handleElementSelect(element, index)}
             >
               <div className="flex items-center justify-between">
@@ -463,10 +462,10 @@ export default function DeskViewer3D() {
 
         <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
 
-        <CustomGrid 
-          size={CONFIG.GRID.SIZE} 
-          divisions={CONFIG.GRID.DIVISIONS} 
-          majorEvery={10} 
+        <CustomGrid
+          size={CONFIG.GRID.SIZE}
+          divisions={CONFIG.GRID.DIVISIONS}
+          majorEvery={10}
         />
       </Canvas>
     </div>
