@@ -14,7 +14,7 @@ Next.js と React Three Fiber で構築された 3D 机レイアウトビュー�
 
 ## 🚀 デモ
 
-![3D デスクレイアウトデモ](https://user-images.githubusercontent.com/placeholder.gif)
+![3D デスクレイアウトデモ](demo.png)
 
 ## 🛠️ 技術スタック
 
