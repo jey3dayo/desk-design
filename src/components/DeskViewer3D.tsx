@@ -5,6 +5,7 @@ import { OrbitControls, Box, Cylinder } from '@react-three/drei'
 import { useEffect, useState } from 'react'
 import * as yaml from 'js-yaml'
 import { saveYamlFile } from '@/app/actions'
+import { CONFIG, getLayoutFilePath } from '@/config/constants'
 
 type Element3D = {
   name: string
@@ -29,34 +30,36 @@ function DeskElement({ element, isSelected, onSelect }: {
   const { name, type, position, size, radius, height, color } = element
 
   if (type === 'box' && size) {
+    const scale = CONFIG.COORDINATE.SCALE_FACTOR
     return (
       <Box
-        position={[position[0] / 100, position[2] / 100, -position[1] / 100]}
-        args={[size[0] / 100, size[2] / 100, size[1] / 100]}
+        position={[position[0] / scale, position[2] / scale, -position[1] / scale]}
+        args={[size[0] / scale, size[2] / scale, size[1] / scale]}
         onClick={onSelect}
       >
         <meshStandardMaterial
           key={`${color}-${element.hidden}`}
-          color={isSelected ? '#ff6b6b' : color}
+          color={isSelected ? CONFIG.UI.SELECTION_COLOR : color}
           transparent={isSelected || element.hidden}
-          opacity={isSelected ? 0.8 : element.hidden ? 0.3 : 1}
+          opacity={isSelected ? CONFIG.UI.SELECTED_OPACITY : element.hidden ? CONFIG.UI.HIDDEN_OPACITY : 1}
         />
       </Box>
     )
   }
 
   if (type === 'cylinder' && radius && height) {
+    const scale = CONFIG.COORDINATE.SCALE_FACTOR
     return (
       <Cylinder
-        position={[position[0] / 100, position[2] / 100, -position[1] / 100]}
-        args={[radius / 100, radius / 100, height / 100]}
+        position={[position[0] / scale, position[2] / scale, -position[1] / scale]}
+        args={[radius / scale, radius / scale, height / scale]}
         onClick={onSelect}
       >
         <meshStandardMaterial
           key={`${color}-${element.hidden}`}
-          color={isSelected ? '#ff6b6b' : color}
+          color={isSelected ? CONFIG.UI.SELECTION_COLOR : color}
           transparent={isSelected || element.hidden}
-          opacity={isSelected ? 0.8 : element.hidden ? 0.3 : 1}
+          opacity={isSelected ? CONFIG.UI.SELECTED_OPACITY : element.hidden ? CONFIG.UI.HIDDEN_OPACITY : 1}
         />
       </Cylinder>
     )
@@ -71,7 +74,7 @@ export default function DeskViewer3D() {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
 
   useEffect(() => {
-    fetch('/desk-layout-3d.yaml')
+    fetch(getLayoutFilePath())
       .then(response => response.text())
       .then(yamlText => {
         const data = yaml.load(yamlText) as DeskLayout
@@ -133,6 +136,28 @@ export default function DeskViewer3D() {
     setSelectedElement(newLayout.elements[selectedIndex])
   }
 
+  const handleDeleteElement = (index: number, event: React.MouseEvent) => {
+    event.stopPropagation() // 親要素の選択イベントを防ぐ
+    
+    if (!layout) return
+    
+    if (window.confirm('このオブジェクトを削除しますか？')) {
+      const newLayout = { ...layout }
+      newLayout.elements.splice(index, 1)
+      
+      setLayout(newLayout)
+      
+      // 削除されたオブジェクトが選択されていた場合、選択を解除
+      if (selectedIndex === index) {
+        setSelectedElement(null)
+        setSelectedIndex(null)
+      } else if (selectedIndex !== null && selectedIndex > index) {
+        // 削除されたオブジェクトより後のインデックスを調整
+        setSelectedIndex(selectedIndex - 1)
+      }
+    }
+  }
+
   const handleNameChange = (name: string) => {
     if (!selectedElement || !layout || selectedIndex === null) return
 
@@ -167,6 +192,40 @@ export default function DeskViewer3D() {
 
   return (
     <div className="w-full h-screen relative">
+      {/* オブジェクト一覧パネル */}
+      <div className="absolute bottom-4 left-4 bg-gray-800 text-white p-4 rounded shadow-lg z-10 min-w-48 max-h-96 overflow-y-auto">
+        <h3 className="font-bold mb-2 text-white">オブジェクト一覧</h3>
+        <div className="space-y-1">
+          {layout.elements.map((element, index) => (
+            <div
+              key={`${element.name}-${index}`}
+              className={`p-2 rounded cursor-pointer text-sm transition-colors ${
+                selectedIndex === index
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-700 hover:bg-gray-600 text-gray-200'
+              }`}
+              onClick={() => handleElementSelect(element, index)}
+            >
+              <div className="flex items-center justify-between">
+                <span className={element.hidden ? 'opacity-50' : ''}>{element.name}</span>
+                <div className="flex items-center space-x-1">
+                  {element.hidden && (
+                    <span className="text-xs opacity-50">🙈</span>
+                  )}
+                  <button
+                    onClick={(e) => handleDeleteElement(index, e)}
+                    className="text-red-400 hover:text-red-300 text-lg p-1 hover:bg-red-600/20 rounded transition-colors font-bold"
+                    title="削除"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {selectedElement && (
         <div className="absolute top-4 right-4 bg-gray-800 text-white p-4 rounded shadow-lg z-10 min-w-64">
           <h3 className="font-bold mb-2 text-white">オブジェクト編集</h3>
@@ -292,7 +351,7 @@ export default function DeskViewer3D() {
       )}
 
       <Canvas
-        camera={{ position: [3, 2, 2], fov: 50 }}
+        camera={{ position: CONFIG.CAMERA.POSITION, fov: CONFIG.CAMERA.FOV }}
         onPointerMissed={() => {
           setSelectedElement(null)
           setSelectedIndex(null)
@@ -312,7 +371,7 @@ export default function DeskViewer3D() {
 
         <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
 
-        <gridHelper args={[2, 20]} material-opacity={0.2} material-transparent={true} />
+        <gridHelper args={[CONFIG.GRID.SIZE, CONFIG.GRID.DIVISIONS]} material-opacity={CONFIG.GRID.OPACITY} material-transparent={true} />
       </Canvas>
     </div>
   )

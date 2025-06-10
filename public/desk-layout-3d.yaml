@@ -10,50 +10,28 @@ elements:
       - 25
       - 2.5
     color: '#a47f7f'
-  - name: desk_leg_1
+  - name: desk_leg_left
     type: box
     position:
       - -53
-      - 10
+      - 0
       - 4
     size:
       - 5
-      - 5
+      - 20
       - 10
-    color: rgba(139, 69, 19, 0.5)
-  - name: desk_leg_2
+    color: '#d6d4a4'
+  - name: desk_leg_right
     type: box
     position:
       - 73
-      - 10
+      - 0
       - 4
     size:
       - 5
-      - 5
+      - 20
       - 10
-    color: rgba(139, 69, 19, 0.5)
-  - name: desk_leg_3
-    type: box
-    position:
-      - -53
-      - -11
-      - 4
-    size:
-      - 5
-      - 5
-      - 10
-    color: rgba(139, 69, 19, 0.5)
-  - name: desk_leg_4
-    type: box
-    position:
-      - 73
-      - -10
-      - 4
-    size:
-      - 5
-      - 5
-      - 10
-    color: rgba(139, 69, 19, 0.5)
+    color: '#d6d4a4'
   - name: speaker_left
     type: box
     position:

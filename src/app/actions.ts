@@ -2,6 +2,7 @@
 
 import { writeFileSync } from 'fs'
 import { join } from 'path'
+import { getLayoutFileServerPath } from '@/config/constants'
 
 export async function saveYamlFile(content: string) {
   try {
@@ -9,8 +10,8 @@ export async function saveYamlFile(content: string) {
       throw new Error('Content is required')
     }
 
-    // publicディレクトリのdesk-layout-3d.yamlに保存
-    const filePath = join(process.cwd(), 'public', 'desk-layout-3d.yaml')
+    // 設定ファイルで定義されたパスに保存
+    const filePath = join(process.cwd(), getLayoutFileServerPath())
     writeFileSync(filePath, content, 'utf8')
 
     return { success: true, message: 'YAML file saved successfully' }
