@@ -1,4 +1,4 @@
-# Sample 3D View
+# Desk Design
 
 Next.js と React Three Fiber で構築された 3D 机レイアウトビューアー。インタラクティブな 3D 環境で机のセットアップを可視化・編集できます。
 
@@ -29,8 +29,8 @@ Next.js と React Three Fiber で構築された 3D 机レイアウトビュー�
 
 1. リポジトリをクローン:
 ```bash
-git clone https://github.com/jey3dayo/sample-3d-view.git
-cd sample-3d-view
+git clone https://github.com/jey3dayo/desk-design.git
+cd desk-design
 ```
 
 2. 依存関係をインストール:
