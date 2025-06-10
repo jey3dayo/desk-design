@@ -27,7 +27,7 @@ function DeskElement({ element, isSelected, onSelect }: {
   isSelected?: boolean
   onSelect?: () => void
 }) {
-  const { name, type, position, size, radius, height, color } = element
+  const { type, position, size, radius, height, color } = element
 
   if (type === 'box' && size) {
     const scale = CONFIG.COORDINATE.SCALE_FACTOR
@@ -138,15 +138,15 @@ export default function DeskViewer3D() {
 
   const handleDeleteElement = (index: number, event: React.MouseEvent) => {
     event.stopPropagation() // 親要素の選択イベントを防ぐ
-    
+
     if (!layout) return
-    
+
     if (window.confirm('このオブジェクトを削除しますか？')) {
       const newLayout = { ...layout }
       newLayout.elements.splice(index, 1)
-      
+
       setLayout(newLayout)
-      
+
       // 削除されたオブジェクトが選択されていた場合、選択を解除
       if (selectedIndex === index) {
         setSelectedElement(null)
@@ -156,6 +156,29 @@ export default function DeskViewer3D() {
         setSelectedIndex(selectedIndex - 1)
       }
     }
+  }
+
+  const handleAddElement = () => {
+    if (!layout) return
+
+    const newElement: Element3D = {
+      name: `新しいオブジェクト${layout.elements.length + 1}`,
+      type: 'box',
+      position: [0, 0, 30],
+      size: [20, 20, 20],
+      color: '#4F4F4F',
+      hidden: false
+    }
+
+    const newLayout = { ...layout }
+    newLayout.elements.push(newElement)
+
+    setLayout(newLayout)
+
+    // 新しく追加したオブジェクトを選択
+    const newIndex = newLayout.elements.length - 1
+    setSelectedElement(newElement)
+    setSelectedIndex(newIndex)
   }
 
   const handleNameChange = (name: string) => {
@@ -194,7 +217,16 @@ export default function DeskViewer3D() {
     <div className="w-full h-screen relative">
       {/* オブジェクト一覧パネル */}
       <div className="absolute bottom-4 left-4 bg-gray-800 text-white p-4 rounded shadow-lg z-10 min-w-48 max-h-96 overflow-y-auto">
-        <h3 className="font-bold mb-2 text-white">オブジェクト一覧</h3>
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="font-bold text-white">オブジェクト一覧</h3>
+          <button
+            onClick={handleAddElement}
+            className="bg-green-600 hover:bg-green-500 text-white text-sm px-2 py-1 rounded transition-colors font-bold"
+            title="オブジェクトを追加"
+          >
+            +
+          </button>
+        </div>
         <div className="space-y-1">
           {layout.elements.map((element, index) => (
             <div
