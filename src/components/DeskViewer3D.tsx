@@ -2,7 +2,8 @@
 
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Box, Cylinder } from '@react-three/drei'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef, useLayoutEffect } from 'react'
+import * as THREE from 'three'
 import * as yaml from 'js-yaml'
 import { saveYamlFile } from '@/app/actions'
 import { CONFIG, getLayoutFilePath } from '@/config/constants'
@@ -66,6 +67,56 @@ function DeskElement({ element, isSelected, onSelect }: {
   }
 
   return null
+}
+
+function CustomGrid({ size = 20, divisions = 40, majorEvery = 10 }: {
+  size?: number
+  divisions?: number
+  majorEvery?: number
+}) {
+  const minorGridRef = useRef<THREE.LineSegments>(null!)
+  const majorGridRef = useRef<THREE.LineSegments>(null!)
+  
+  useLayoutEffect(() => {
+    const minorPositions: number[] = []
+    const majorPositions: number[] = []
+    
+    for (let i = 0; i <= divisions; i++) {
+      const pos = (i / divisions - 0.5) * size
+      
+      if (i % majorEvery === 0) {
+        // Major lines (every 10th line)
+        majorPositions.push(-size/2, 0, pos, size/2, 0, pos) // horizontal
+        majorPositions.push(pos, 0, -size/2, pos, 0, size/2) // vertical
+      } else {
+        // Minor lines
+        minorPositions.push(-size/2, 0, pos, size/2, 0, pos) // horizontal
+        minorPositions.push(pos, 0, -size/2, pos, 0, size/2) // vertical
+      }
+    }
+    
+    if (minorGridRef.current) {
+      minorGridRef.current.geometry.setAttribute('position', 
+        new THREE.BufferAttribute(new Float32Array(minorPositions), 3))
+    }
+    if (majorGridRef.current) {
+      majorGridRef.current.geometry.setAttribute('position', 
+        new THREE.BufferAttribute(new Float32Array(majorPositions), 3))
+    }
+  }, [size, divisions, majorEvery])
+  
+  return (
+    <>
+      <lineSegments ref={minorGridRef}>
+        <bufferGeometry />
+        <lineBasicMaterial color="#666666" opacity={0.2} transparent />
+      </lineSegments>
+      <lineSegments ref={majorGridRef}>
+        <bufferGeometry />
+        <lineBasicMaterial color="#999999" opacity={0.4} transparent />
+      </lineSegments>
+    </>
+  )
 }
 
 export default function DeskViewer3D() {
@@ -403,7 +454,11 @@ export default function DeskViewer3D() {
 
         <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
 
-        <gridHelper args={[CONFIG.GRID.SIZE, CONFIG.GRID.DIVISIONS]} material-opacity={CONFIG.GRID.OPACITY} material-transparent={true} />
+        <CustomGrid 
+          size={CONFIG.GRID.SIZE} 
+          divisions={CONFIG.GRID.DIVISIONS} 
+          majorEvery={10} 
+        />
       </Canvas>
     </div>
   )

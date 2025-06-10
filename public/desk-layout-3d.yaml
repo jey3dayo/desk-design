@@ -2,99 +2,110 @@ elements:
   - name: shelf
     type: box
     position:
-      - 10
+      - 100
       - 0
-      - 10
+      - 100
     size:
-      - 130
+      - 1300
+      - 250
       - 25
-      - 2.5
     color: '#a47f7f'
   - name: desk_leg_left
     type: box
     position:
-      - -53
+      - -525
       - 0
-      - 4
+      - 37
     size:
-      - 5
-      - 20
-      - 10
+      - 50
+      - 200
+      - 100
     color: '#d6d4a4'
   - name: desk_leg_right
     type: box
     position:
-      - 73
+      - 730
       - 0
-      - 4
+      - 37
     size:
-      - 5
-      - 20
-      - 10
+      - 50
+      - 200
+      - 100
     color: '#d6d4a4'
   - name: speaker_left
     type: box
     position:
-      - -48
-      - 2
-      - 23
-    size:
-      - 14.5
+      - -480
       - 20
-      - 24
+      - 233
+    size:
+      - 145
+      - 200
+      - 240
     color: '#4F4F4F'
     hidden: false
   - name: speaker_right
     type: box
     position:
-      - 68
-      - 2
-      - 23
-    size:
-      - 14.5
+      - 680
       - 20
-      - 24
+      - 233
+    size:
+      - 145
+      - 200
+      - 240
     color: '#4F4F4F'
     hidden: false
   - name: display
     type: box
     position:
-      - 12.25
-      - 14
-      - 34.5
+      - 122.5
+      - 140
+      - 345
     size:
-      - 81.5
-      - 1
-      - 35
+      - 815
+      - 10
+      - 350
     color: '#19d8e6'
   - name: cable_hole
     type: cylinder
     position:
-      - 8.5
-      - 6.5
-      - 10.1
-    radius: 2.5
-    height: 2.5
+      - 85
+      - 65
+      - 101
+    radius: 25
+    height: 25
     color: '#1E90FF'
   - name: clamp
     type: box
     position:
-      - 20
-      - 9
-      - 3.5
+      - 200
+      - 90
+      - 35
     size:
-      - 15
-      - 10.5
-      - 5
+      - 150
+      - 105
+      - 50
     color: '#696969'
   - name: cutout
     type: box
     position:
-      - 18
-      - 8
-      - 10.1
+      - 180
+      - 80
+      - 101
     size:
-      - 10
-      - 8
-      - 2.5
+      - 100
+      - 80
+      - 25
+    color: '#000000'
+  - name: shelf_cutout
+    type: box
+    position:
+      - 7650
+      - 62.5
+      - 101
+    size:
+      - 1000
+      - 125
+      - 25
     color: '#000000'

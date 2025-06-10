@@ -5,20 +5,20 @@ export const CONFIG = {
   
   // 3D表示設定
   CAMERA: {
-    POSITION: [3, 2, 2] as [number, number, number],
-    FOV: 50,
+    POSITION: [8, 6, 8] as [number, number, number],
+    FOV: 75,
   },
   
   // グリッド設定
   GRID: {
-    SIZE: 2,
-    DIVISIONS: 20,
+    SIZE: 20,
+    DIVISIONS: 40,
     OPACITY: 0.2,
   },
   
   // 座標系設定
   COORDINATE: {
-    SCALE_FACTOR: 100, // mm to meters conversion
+    SCALE_FACTOR: 100, // cm to meters conversion
   },
   
   // UI設定
