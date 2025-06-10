@@ -5,7 +5,6 @@ import { OrbitControls, Box, Cylinder } from '@react-three/drei'
 import { useEffect, useState, useRef, useLayoutEffect } from 'react'
 import * as THREE from 'three'
 import * as yaml from 'js-yaml'
-import { saveYamlFile } from '@/app/actions'
 import { CONFIG, getLayoutFilePath } from '@/config/constants'
 
 type Element3D = {
@@ -125,11 +124,26 @@ export default function DeskViewer3D() {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
 
   useEffect(() => {
+    // localStorage から読み込み
+    const savedData = localStorage.getItem('deskLayout')
+    if (savedData) {
+      try {
+        const data = yaml.load(savedData) as DeskLayout
+        setLayout(data)
+        return
+      } catch (error) {
+        console.error('Error loading from localStorage:', error)
+      }
+    }
+
+    // localStorage にデータがない場合は初期ファイルから読み込み
     fetch(getLayoutFilePath())
       .then(response => response.text())
       .then(yamlText => {
         const data = yaml.load(yamlText) as DeskLayout
         setLayout(data)
+        // 初回読み込み時に localStorage に保存
+        localStorage.setItem('deskLayout', yamlText)
       })
       .catch(error => console.error('Error loading YAML:', error))
   }, [])
@@ -242,18 +256,13 @@ export default function DeskViewer3D() {
     setSelectedElement(newLayout.elements[selectedIndex])
   }
 
-  const saveToYaml = async () => {
+  const saveToLocal = () => {
     if (!layout) return
 
     try {
       const yamlContent = yaml.dump(layout)
-      const result = await saveYamlFile(yamlContent)
-
-      if (result.success) {
-        alert('YAMLファイルが保存されました！')
-      } else {
-        throw new Error(result.error || '保存に失敗しました')
-      }
+      localStorage.setItem('deskLayout', yamlContent)
+      alert('データが保存されました！')
     } catch (error) {
       console.error('保存エラー:', error)
       alert('保存に失敗しました: ' + error)
@@ -414,7 +423,7 @@ export default function DeskViewer3D() {
             </div>
             <div className="flex space-x-2 mt-3">
               <button
-                onClick={saveToYaml}
+                onClick={saveToLocal}
                 className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-1 px-2 rounded"
               >
                 保存
