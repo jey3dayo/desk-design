@@ -30,11 +30,12 @@ function DeskElement({ element, isSelected, onSelect }: {
   if (type === 'box' && size) {
     return (
       <Box
-        position={[position[0] / 10, position[2] / 10, -position[1] / 10]}
-        args={[size[0] / 10, size[2] / 10, size[1] / 10]}
+        position={[position[0] / 100, position[2] / 100, -position[1] / 100]}
+        args={[size[0] / 100, size[2] / 100, size[1] / 100]}
         onClick={onSelect}
       >
         <meshStandardMaterial 
+          key={color}
           color={isSelected ? '#ff6b6b' : color} 
           transparent={isSelected} 
           opacity={isSelected ? 0.8 : 1}
@@ -46,11 +47,12 @@ function DeskElement({ element, isSelected, onSelect }: {
   if (type === 'cylinder' && radius && height) {
     return (
       <Cylinder
-        position={[position[0] / 10, position[2] / 10, -position[1] / 10]}
-        args={[radius / 10, radius / 10, height / 10]}
+        position={[position[0] / 100, position[2] / 100, -position[1] / 100]}
+        args={[radius / 100, radius / 100, height / 100]}
         onClick={onSelect}
       >
         <meshStandardMaterial 
+          key={color}
           color={isSelected ? '#ff6b6b' : color} 
           transparent={isSelected} 
           opacity={isSelected ? 0.8 : 1}
@@ -91,6 +93,30 @@ export default function DeskViewer3D() {
     const newLayout = { ...layout }
     const axisIndex = axis === 'x' ? 0 : axis === 'y' ? 1 : 2
     newLayout.elements[selectedIndex].position[axisIndex] = numValue
+    
+    setLayout(newLayout)
+    setSelectedElement(newLayout.elements[selectedIndex])
+  }
+
+  const handleSizeChange = (axis: 'x' | 'y' | 'z', value: string) => {
+    if (!selectedElement || !layout || selectedIndex === null || !selectedElement.size) return
+    
+    const numValue = parseFloat(value)
+    if (isNaN(numValue)) return
+
+    const newLayout = { ...layout }
+    const axisIndex = axis === 'x' ? 0 : axis === 'y' ? 1 : 2
+    newLayout.elements[selectedIndex].size![axisIndex] = numValue
+    
+    setLayout(newLayout)
+    setSelectedElement(newLayout.elements[selectedIndex])
+  }
+
+  const handleColorChange = (color: string) => {
+    if (!selectedElement || !layout || selectedIndex === null) return
+
+    const newLayout = { ...layout }
+    newLayout.elements[selectedIndex].color = color
     
     setLayout(newLayout)
     setSelectedElement(newLayout.elements[selectedIndex])
@@ -144,7 +170,7 @@ export default function DeskViewer3D() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1 text-gray-200">X座標</label>
+              <label className="block text-sm font-medium mb-1 text-gray-200">X座標 (mm)</label>
               <input
                 type="number"
                 value={selectedElement.position[0]}
@@ -153,7 +179,7 @@ export default function DeskViewer3D() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1 text-gray-200">Y座標</label>
+              <label className="block text-sm font-medium mb-1 text-gray-200">Y座標 (mm)</label>
               <input
                 type="number"
                 value={selectedElement.position[1]}
@@ -162,13 +188,65 @@ export default function DeskViewer3D() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1 text-gray-200">Z座標</label>
+              <label className="block text-sm font-medium mb-1 text-gray-200">Z座標 (mm)</label>
               <input
                 type="number"
                 value={selectedElement.position[2]}
                 onChange={(e) => handlePositionChange('z', e.target.value)}
                 className="w-full px-2 py-1 border border-gray-600 rounded bg-gray-700 text-white"
               />
+            </div>
+            {selectedElement.size && (
+              <>
+                <div className="border-t border-gray-600 pt-2 mt-2">
+                  <h4 className="text-sm font-medium text-gray-200 mb-2">サイズ</h4>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-gray-200">幅 (mm)</label>
+                  <input
+                    type="number"
+                    value={selectedElement.size[0]}
+                    onChange={(e) => handleSizeChange('x', e.target.value)}
+                    className="w-full px-2 py-1 border border-gray-600 rounded bg-gray-700 text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-gray-200">奥行き (mm)</label>
+                  <input
+                    type="number"
+                    value={selectedElement.size[1]}
+                    onChange={(e) => handleSizeChange('y', e.target.value)}
+                    className="w-full px-2 py-1 border border-gray-600 rounded bg-gray-700 text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-gray-200">高さ (mm)</label>
+                  <input
+                    type="number"
+                    value={selectedElement.size[2]}
+                    onChange={(e) => handleSizeChange('z', e.target.value)}
+                    className="w-full px-2 py-1 border border-gray-600 rounded bg-gray-700 text-white"
+                  />
+                </div>
+              </>
+            )}
+            <div className="border-t border-gray-600 pt-2 mt-2">
+              <label className="block text-sm font-medium mb-1 text-gray-200">色</label>
+              <div className="flex space-x-2">
+                <input
+                  type="color"
+                  value={selectedElement.color.startsWith('#') ? selectedElement.color : '#4F4F4F'}
+                  onChange={(e) => handleColorChange(e.target.value)}
+                  className="w-12 h-8 border border-gray-600 rounded cursor-pointer"
+                />
+                <input
+                  type="text"
+                  value={selectedElement.color}
+                  onChange={(e) => handleColorChange(e.target.value)}
+                  className="flex-1 px-2 py-1 border border-gray-600 rounded bg-gray-700 text-white text-sm"
+                  placeholder="#000000 or rgba(255,255,255,0.5)"
+                />
+              </div>
             </div>
             <div className="flex space-x-2 mt-3">
               <button
@@ -191,7 +269,7 @@ export default function DeskViewer3D() {
         </div>
       )}
       
-      <Canvas camera={{ position: [20, 15, 15], fov: 50 }}>
+      <Canvas camera={{ position: [5, 3, 3], fov: 50 }}>
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 5]} intensity={0.8} />
         
@@ -206,7 +284,7 @@ export default function DeskViewer3D() {
         
         <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
         
-        <gridHelper args={[20, 20]} />
+        <gridHelper args={[5, 50]} material-opacity={0.2} material-transparent={true} />
       </Canvas>
     </div>
   )
