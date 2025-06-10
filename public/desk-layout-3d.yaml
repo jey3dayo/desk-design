@@ -76,17 +76,6 @@ elements:
     radius: 25
     height: 25
     color: '#1E90FF'
-  - name: clamp
-    type: box
-    position:
-      - 200
-      - 90
-      - 35
-    size:
-      - 150
-      - 105
-      - 50
-    color: '#696969'
   - name: cutout
     type: box
     position:
@@ -96,16 +85,5 @@ elements:
     size:
       - 100
       - 80
-      - 25
-    color: '#000000'
-  - name: shelf_cutout
-    type: box
-    position:
-      - 7650
-      - 62.5
-      - 101
-    size:
-      - 1000
-      - 125
       - 25
     color: '#000000'
