@@ -20,13 +20,13 @@ type DeskLayout = {
   elements: Element3D[]
 }
 
-function DeskElement({ element, isSelected, onSelect }: { 
+function DeskElement({ element, isSelected, onSelect }: {
   element: Element3D
   isSelected?: boolean
-  onSelect?: () => void
+  onSelect?: (e?: any) => void
 }) {
   const { name, type, position, size, radius, height, color } = element
-  
+
   if (type === 'box' && size) {
     return (
       <Box
@@ -34,16 +34,16 @@ function DeskElement({ element, isSelected, onSelect }: {
         args={[size[0] / 100, size[2] / 100, size[1] / 100]}
         onClick={onSelect}
       >
-        <meshStandardMaterial 
+        <meshStandardMaterial
           key={color}
-          color={isSelected ? '#ff6b6b' : color} 
-          transparent={isSelected} 
+          color={isSelected ? '#ff6b6b' : color}
+          transparent={isSelected}
           opacity={isSelected ? 0.8 : 1}
         />
       </Box>
     )
   }
-  
+
   if (type === 'cylinder' && radius && height) {
     return (
       <Cylinder
@@ -51,16 +51,16 @@ function DeskElement({ element, isSelected, onSelect }: {
         args={[radius / 100, radius / 100, height / 100]}
         onClick={onSelect}
       >
-        <meshStandardMaterial 
+        <meshStandardMaterial
           key={color}
-          color={isSelected ? '#ff6b6b' : color} 
-          transparent={isSelected} 
+          color={isSelected ? '#ff6b6b' : color}
+          transparent={isSelected}
           opacity={isSelected ? 0.8 : 1}
         />
       </Cylinder>
     )
   }
-  
+
   return null
 }
 
@@ -86,28 +86,28 @@ export default function DeskViewer3D() {
 
   const handlePositionChange = (axis: 'x' | 'y' | 'z', value: string) => {
     if (!selectedElement || !layout || selectedIndex === null) return
-    
+
     const numValue = parseFloat(value)
     if (isNaN(numValue)) return
 
     const newLayout = { ...layout }
     const axisIndex = axis === 'x' ? 0 : axis === 'y' ? 1 : 2
     newLayout.elements[selectedIndex].position[axisIndex] = numValue
-    
+
     setLayout(newLayout)
     setSelectedElement(newLayout.elements[selectedIndex])
   }
 
   const handleSizeChange = (axis: 'x' | 'y' | 'z', value: string) => {
     if (!selectedElement || !layout || selectedIndex === null || !selectedElement.size) return
-    
+
     const numValue = parseFloat(value)
     if (isNaN(numValue)) return
 
     const newLayout = { ...layout }
     const axisIndex = axis === 'x' ? 0 : axis === 'y' ? 1 : 2
     newLayout.elements[selectedIndex].size![axisIndex] = numValue
-    
+
     setLayout(newLayout)
     setSelectedElement(newLayout.elements[selectedIndex])
   }
@@ -117,7 +117,7 @@ export default function DeskViewer3D() {
 
     const newLayout = { ...layout }
     newLayout.elements[selectedIndex].color = color
-    
+
     setLayout(newLayout)
     setSelectedElement(newLayout.elements[selectedIndex])
   }
@@ -127,7 +127,7 @@ export default function DeskViewer3D() {
 
     const newLayout = { ...layout }
     newLayout.elements[selectedIndex].name = name
-    
+
     setLayout(newLayout)
     setSelectedElement(newLayout.elements[selectedIndex])
   }
@@ -149,11 +149,11 @@ export default function DeskViewer3D() {
       alert('保存に失敗しました: ' + error)
     }
   }
-  
+
   if (!layout) {
     return <div>Loading...</div>
   }
-  
+
   return (
     <div className="w-full h-screen relative">
       {selectedElement && (
@@ -268,22 +268,48 @@ export default function DeskViewer3D() {
           </div>
         </div>
       )}
-      
-      <Canvas camera={{ position: [5, 3, 3], fov: 50 }}>
+
+      <Canvas
+        camera={{ position: [5, 3, 3], fov: 50 }}
+        onClick={(e) => {
+          // 何もない場所をクリックした場合の処理
+          if (e.eventObject === e.object) {
+            setSelectedElement(null)
+            setSelectedIndex(null)
+          }
+        }}
+      >
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 5]} intensity={0.8} />
-        
+
+        {/* 背景用の不可視なプレーン */}
+        <mesh
+          position={[0, 0, 0]}
+          rotation={[-Math.PI / 2, 0, 0]}
+          onClick={(e) => {
+            e.stopPropagation()
+            setSelectedElement(null)
+            setSelectedIndex(null)
+          }}
+        >
+          <planeGeometry args={[100, 100]} />
+          <meshBasicMaterial transparent opacity={0} />
+        </mesh>
+
         {layout.elements.map((element, index) => (
-          <DeskElement 
-            key={`${element.name}-${index}`} 
+          <DeskElement
+            key={`${element.name}-${index}`}
             element={element}
             isSelected={selectedIndex === index}
-            onSelect={() => handleElementSelect(element, index)}
+            onSelect={(e) => {
+              e?.stopPropagation()
+              handleElementSelect(element, index)
+            }}
           />
         ))}
-        
+
         <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
-        
+
         <gridHelper args={[5, 50]} material-opacity={0.2} material-transparent={true} />
       </Canvas>
     </div>
