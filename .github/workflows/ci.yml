@@ -12,15 +12,27 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7.0.1
     
-    - uses: pnpm/action-setup@v4
+    - uses: pnpm/action-setup@v6.1.0
     
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-node@v7.1.0
       with:
         node-version-file: 'package.json'
         cache: 'pnpm'
     
+    - uses: jdx/mise-action@v5.2.4
+      with:
+        install: false
+
+    - name: Install gh-actions-lock
+      run: mise install gh-actions-lock
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Verify actions.lock
+      run: mise run actions-lock:verify
+
     - name: Install dependencies
       run: pnpm install
     
