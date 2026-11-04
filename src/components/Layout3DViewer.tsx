@@ -129,7 +129,7 @@ export default function Layout3DViewer() {
     if (savedData) {
       try {
         const data = yaml.load(savedData) as DeskLayout
-        setLayout(data)
+        queueMicrotask(() => setLayout(data))
         return
       } catch (error) {
         console.error('Error loading from localStorage:', error)
